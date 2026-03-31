@@ -1,0 +1,33 @@
+name: JAD Chambers — Daily Compliance Alert
+
+on:
+  schedule:
+    - cron: '30 2 * * *'   # 8:00 AM IST every day (IST = UTC+5:30)
+  workflow_dispatch:        # also allows manual trigger from GitHub Actions tab
+
+jobs:
+  send-compliance-alert:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: |
+          cd scripts
+          npm install
+
+      - name: Run compliance alert script
+        env:
+          FIREBASE_DATABASE_URL: ${{ secrets.FIREBASE_DATABASE_URL }}
+          GMAIL_USER:            ${{ secrets.GMAIL_USER }}
+          GMAIL_APP_PASSWORD:    ${{ secrets.GMAIL_APP_PASSWORD }}
+          ALERT_TO:              ramdubey1333@gmail.com
+          ALERT_DAYS:            4
+        run: node scripts/send-alerts.js
