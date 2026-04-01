@@ -278,6 +278,53 @@ header::before {
   color: #90c4f0; line-height: 1.7; white-space: pre;
 }
 
+/* ══ SORT CONTROLS ══ */
+.sort-controls {
+  display: flex; align-items: center; gap: 8px;
+  font-family: 'Source Code Pro', monospace; font-size: 0.62rem;
+}
+.sort-label {
+  text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--muted2); white-space: nowrap;
+}
+.sort-btn {
+  background: var(--surface2); border: 1px solid var(--border2);
+  color: var(--text2); padding: 5px 12px; border-radius: 3px;
+  font-family: 'Source Code Pro', monospace; font-size: 0.6rem;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  cursor: pointer; transition: all 0.2s; white-space: nowrap;
+}
+.sort-btn:hover { border-color: var(--gold); color: var(--gold2); }
+.sort-btn.active { background: var(--gold-dim2); border-color: var(--gold); color: var(--gold2); }
+
+/* ══ CAUSE LIST BUTTON ══ */
+.cause-list-area {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 20px;
+  background: var(--surface); border: 1px solid var(--border2);
+  border-radius: 4px; padding: 12px 18px;
+}
+.cause-list-label {
+  font-family: 'Source Code Pro', monospace; font-size: 0.62rem;
+  text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted2);
+  white-space: nowrap;
+}
+.cause-list-date {
+  background: var(--bg2); border: 1px solid var(--border2);
+  border-radius: 3px; padding: 6px 10px;
+  color: var(--text); font-family: 'Source Code Pro', monospace;
+  font-size: 0.76rem; outline: none; transition: border-color 0.2s;
+  color-scheme: dark;
+}
+.cause-list-date:focus { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(201,168,76,0.08); }
+.btn-cause-list {
+  background: var(--gold-dim2); border: 1px solid var(--gold);
+  color: var(--gold2); padding: 7px 18px; border-radius: 3px;
+  font-family: 'Source Code Pro', monospace; font-size: 0.65rem;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  cursor: pointer; transition: all 0.2s; white-space: nowrap;
+}
+.btn-cause-list:hover { background: var(--gold); color: var(--bg); }
+
 /* ══ MAIN ══ */
 .main { padding: 24px 36px; position: relative; z-index: 1; }
 
@@ -633,6 +680,13 @@ textarea.modal-ta:focus { border-color: var(--gold); }
   <button class="btn-save-alert" onclick="saveAlertConfig()">💾 Save Alert Settings</button>
 </div>
 
+<!-- ══ CAUSE LIST DOWNLOAD ══ -->
+<div class="cause-list-area">
+  <span class="cause-list-label">📋 Cause List</span>
+  <input type="date" id="causeListDate" class="cause-list-date">
+  <button class="btn-cause-list" onclick="downloadCauseList()">↓ Download Cause List</button>
+</div>
+
 <!-- ══ SUMMARY CARDS ══ -->
 <div class="summary-grid">
   <div class="summary-card sc" onclick="switchTabById('sc')">
@@ -677,6 +731,12 @@ textarea.modal-ta:focus { border-color: var(--gold); }
       <span style="color:#b09aea;">Supreme Court of India</span>
     </div>
     <div class="section-actions">
+      <div class="sort-controls">
+        <span class="sort-label">Sort:</span>
+        <button class="sort-btn active" id="sort-sc-default" onclick="sortTable('sc','default',this)">Default</button>
+        <button class="sort-btn" id="sort-sc-ndoh" onclick="sortTable('sc','ndoh',this)">NDOH ↑</button>
+        <button class="sort-btn" id="sort-sc-duedate" onclick="sortTable('sc','duedate',this)">Due Date ↑</button>
+      </div>
       <button class="btn" onclick="exportTable('sc')">↓ Export CSV</button>
       <button class="btn btn-primary" onclick="openModal('sc')">+ Add Matter</button>
     </div>
@@ -692,6 +752,12 @@ textarea.modal-ta:focus { border-color: var(--gold); }
       <span style="color:#7ab8e8;">High Court</span>
     </div>
     <div class="section-actions">
+      <div class="sort-controls">
+        <span class="sort-label">Sort:</span>
+        <button class="sort-btn active" id="sort-hc-default" onclick="sortTable('hc','default',this)">Default</button>
+        <button class="sort-btn" id="sort-hc-ndoh" onclick="sortTable('hc','ndoh',this)">NDOH ↑</button>
+        <button class="sort-btn" id="sort-hc-duedate" onclick="sortTable('hc','duedate',this)">Due Date ↑</button>
+      </div>
       <button class="btn" onclick="exportTable('hc')">↓ Export CSV</button>
       <button class="btn btn-primary" onclick="openModal('hc')">+ Add Matter</button>
     </div>
@@ -707,6 +773,12 @@ textarea.modal-ta:focus { border-color: var(--gold); }
       <span style="color:#65c4a0;">Lower Courts</span>
     </div>
     <div class="section-actions">
+      <div class="sort-controls">
+        <span class="sort-label">Sort:</span>
+        <button class="sort-btn active" id="sort-lc-default" onclick="sortTable('lc','default',this)">Default</button>
+        <button class="sort-btn" id="sort-lc-ndoh" onclick="sortTable('lc','ndoh',this)">NDOH ↑</button>
+        <button class="sort-btn" id="sort-lc-duedate" onclick="sortTable('lc','duedate',this)">Due Date ↑</button>
+      </div>
       <button class="btn" onclick="exportTable('lc')">↓ Export CSV</button>
       <button class="btn btn-primary" onclick="openModal('lc')">+ Add Matter</button>
     </div>
@@ -722,6 +794,12 @@ textarea.modal-ta:focus { border-color: var(--gold); }
       <span style="color:#e8a870;">Tribunals</span>
     </div>
     <div class="section-actions">
+      <div class="sort-controls">
+        <span class="sort-label">Sort:</span>
+        <button class="sort-btn active" id="sort-tr-default" onclick="sortTable('tr','default',this)">Default</button>
+        <button class="sort-btn" id="sort-tr-ndoh" onclick="sortTable('tr','ndoh',this)">NDOH ↑</button>
+        <button class="sort-btn" id="sort-tr-duedate" onclick="sortTable('tr','duedate',this)">Due Date ↑</button>
+      </div>
       <button class="btn" onclick="exportTable('tr')">↓ Export CSV</button>
       <button class="btn btn-primary" onclick="openModal('tr')">+ Add Matter</button>
     </div>
@@ -987,6 +1065,19 @@ function chipClass(diff) {
   return 'ok';
 }
 
+// ─── Sort state ───────────────────────────────────────────────────────────────
+const sortKeys = { sc: '', hc: '', lc: '', tr: '' };
+
+window._sortTable = function(key, val, btn) {
+  sortKeys[key] = val === 'default' ? '' : val;
+  // Update active button styling
+  ['default','ndoh','duedate'].forEach(function(k) {
+    const b = document.getElementById('sort-'+key+'-'+k);
+    if (b) b.classList.toggle('active', k === val);
+  });
+  renderTable(key);
+};
+
 // ─── Render ───────────────────────────────────────────────────────────────────
 function renderAll() {
   ['sc','hc','lc','tr'].forEach(renderTable);
@@ -1003,7 +1094,20 @@ function renderTable(key) {
     return;
   }
   document.getElementById(`${key}TabCount`).textContent = data[key].length;
-  tbody.innerHTML = data[key].map((r, i) => {
+
+  // Build sorted index array (don't mutate original data)
+  let indices = data[key].map((_,i) => i);
+  const sk = sortKeys[key];
+  if (sk === 'ndoh' || sk === 'duedate') {
+    indices.sort((a, b) => {
+      const da = data[key][a][sk] || '9999-99-99';
+      const db = data[key][b][sk] || '9999-99-99';
+      return da < db ? -1 : da > db ? 1 : 0;
+    });
+  }
+
+  tbody.innerHTML = indices.map((i, srNum) => {
+    const r = data[key][i];
     const nd = daysFrom(r.ndoh), dd = daysFrom(r.duedate);
     const isAlert = (nd !== null && nd >= 0 && nd <= 2) || (dd !== null && dd >= 0 && dd <= 2) || (nd !== null && nd < 0) || (dd !== null && dd < 0);
     const isWarn  = !isAlert && ((nd !== null && nd <= 5) || (dd !== null && dd <= 5));
@@ -1012,7 +1116,7 @@ function renderTable(key) {
     const ddChip  = dd === null ? `<span class="date-chip neutral">—</span>` : `<span class="date-chip ${chipClass(dd)}">${formatDate(r.duedate)}${dd >= 0 && dd <= 7 ? ` · ${dd}d` : ''}</span>`;
     const sCls    = {pending:'status-pending',complied:'status-complied',overdue:'status-overdue',partial:'status-partial'};
     return `<tr class="${rowCls}">
-      <td class="sr-no">${i+1}</td>
+      <td class="sr-no">${srNum+1}</td>
       <td class="case-title">
         <div class="case-title-main">${r.title||'—'}</div>
         <div class="case-title-sub">${r.casenum||''}${r.court?' · '+r.court:''}</div>
@@ -1168,6 +1272,121 @@ window.switchTab = function(key,btn) {
 };
 window.switchTabById = function(key) { const btn=document.getElementById(`tab-${key}`); if(btn) switchTab(key,btn); };
 
+// ─── Download Cause List for selected date (PDF via print) ───────────────────
+window._downloadCauseList = function() {
+  const dateVal = document.getElementById('causeListDate').value;
+  if (!dateVal) { showToast('Please select a date first','error'); return; }
+
+  const labels = {sc:'Supreme Court',hc:'High Court',lc:'Lower Court',tr:'Tribunals'};
+  let allMatches = [];
+  ['sc','hc','lc','tr'].forEach(key => {
+    (data[key]||[]).forEach(r => {
+      if (r.ndoh === dateVal || r.duedate === dateVal) {
+        allMatches.push({...r, _courtLabel: labels[key]});
+      }
+    });
+  });
+
+  const displayDate = new Date(dateVal).toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'});
+
+  if (!allMatches.length) {
+    showToast(`No matters listed for ${displayDate}`,'');
+    return;
+  }
+
+  const byType = {
+    NDOH: allMatches.filter(r => r.ndoh === dateVal),
+    'Due Date': allMatches.filter(r => r.duedate === dateVal && r.ndoh !== dateVal)
+  };
+
+  let tableRows = '';
+  let sr = 1;
+  ['NDOH','Due Date'].forEach(type => {
+    if (!byType[type].length) return;
+    tableRows += `<tr class="section-hdr"><td colspan="7">${type === 'NDOH' ? '📅 Next Date of Hearing (NDOH) Matters' : '⏰ Due Date / Compliance Matters'}</td></tr>`;
+    byType[type].forEach(r => {
+      const statusMap = {pending:'Pending',complied:'Complied',partial:'Partial',overdue:'Overdue'};
+      tableRows += `<tr>
+        <td class="sr">${sr++}</td>
+        <td class="case-name">${r.title||'—'}</td>
+        <td>${r.casenum||'—'}</td>
+        <td>${r._courtLabel}${r.court?' · '+r.court:''}</td>
+        <td>${r.ndoh||'—'}</td>
+        <td>${r.duedate||'—'}</td>
+        <td class="status-${(r.status||'pending')}">${statusMap[r.status]||'Pending'}</td>
+      </tr>
+      ${r.compliance ? `<tr class="compliance-row"><td></td><td colspan="6"><span class="compliance-label">Compliance:</span> ${r.compliance}</td></tr>` : ''}`;
+    });
+  });
+
+  const generatedOn = new Date().toLocaleString('en-IN');
+
+  const html = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Cause List — ${displayDate}</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Cinzel:wght@400;600;700&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'EB Garamond', Georgia, serif; font-size: 11pt; color: #1a1a1a; background: #fff; padding: 20px 32px 32px; }
+  .header { text-align: center; border-bottom: 2px solid #8b7340; padding-bottom: 14px; margin-bottom: 18px; }
+  .emblem { font-size: 2.2rem; margin-bottom: 4px; }
+  .chamber-name { font-family: 'Cinzel', serif; font-size: 15pt; font-weight: 700; color: #5a3e10; letter-spacing: 0.06em; }
+  .sub-title { font-size: 10pt; font-style: italic; color: #666; margin-top: 3px; }
+  .cause-title { font-family: 'Cinzel', serif; font-size: 13pt; font-weight: 600; color: #2c1a00; margin-top: 10px; text-transform: uppercase; letter-spacing: 0.08em; }
+  .date-line { font-size: 11pt; font-weight: 600; color: #8b7340; margin-top: 4px; }
+  table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+  th { background: #3c2a00; color: #f5e8c0; font-family: 'Cinzel', serif; font-size: 8pt; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; padding: 7px 8px; text-align: left; }
+  td { padding: 7px 8px; border-bottom: 1px solid #e0d8c8; font-size: 10pt; vertical-align: top; }
+  tr:nth-child(even) td { background: #faf8f3; }
+  .sr { width: 30px; text-align: center; font-weight: 600; color: #8b7340; }
+  .case-name { font-weight: 600; color: #1a0a00; }
+  .section-hdr td { background: #f0e8d0; font-family: 'Cinzel', serif; font-size: 9.5pt; font-weight: 600; color: #5a3e10; padding: 8px 10px; border-top: 1.5px solid #c8b070; border-bottom: 1.5px solid #c8b070; letter-spacing: 0.04em; }
+  .compliance-row td { padding: 3px 8px 8px; background: #fffdf5; font-size: 9.5pt; font-style: italic; color: #555; border-bottom: 1px solid #e8dfc8; }
+  .compliance-label { font-weight: 600; font-style: normal; color: #7a5c20; }
+  .status-pending  { color: #b07000; font-weight: 600; }
+  .status-complied { color: #2a7a40; font-weight: 600; }
+  .status-overdue  { color: #c0392b; font-weight: 600; }
+  .status-partial  { color: #5a5a00; font-weight: 600; }
+  .footer { margin-top: 20px; padding-top: 10px; border-top: 1px solid #c8b070; display: flex; justify-content: space-between; font-size: 8.5pt; color: #888; font-style: italic; }
+  .total-badge { background: #3c2a00; color: #f5e8c0; padding: 3px 10px; border-radius: 3px; font-family: 'Cinzel', serif; font-size: 8pt; letter-spacing: 0.06em; display: inline-block; margin-top: 6px; }
+  @media print {
+    body { padding: 10px 18px; }
+    @page { margin: 15mm 12mm; size: A4; }
+  }
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="emblem">⚖</div>
+  <div class="chamber-name">Law Chambers of Jai Anant Dehadrai</div>
+  <div class="sub-title">Advocate — Supreme Court of India</div>
+  <div class="cause-title">Cause List</div>
+  <div class="date-line">${displayDate}</div>
+  <div class="total-badge">${allMatches.length} Matter${allMatches.length !== 1 ? 's' : ''} Listed</div>
+</div>
+<table>
+  <thead><tr>
+    <th>Sr.</th><th>Case Title</th><th>Case No.</th><th>Court</th><th>NDOH</th><th>Due Date</th><th>Status</th>
+  </tr></thead>
+  <tbody>${tableRows}</tbody>
+</table>
+<div class="footer">
+  <span>Generated: ${generatedOn}</span>
+  <span>Law Chambers of Jai Anant Dehadrai — Confidential</span>
+</div>
+<script>window.onload=function(){window.print();}<\/script>
+</body>
+</html>`;
+
+  const win = window.open('', '_blank');
+  if (!win) { showToast('Allow pop-ups to download PDF','error'); return; }
+  win.document.write(html);
+  win.document.close();
+  showToast(`Cause list ready for ${displayDate} ✓`,'success');
+};
+
 // ─── Export ───────────────────────────────────────────────────────────────────
 window.exportTable = function(key) {
   const rows = data[key]||[];
@@ -1248,6 +1467,11 @@ seedExistingData();
 renderAll();
 _initFirebase(FIREBASE_CONFIG);
 
+</script>
+<!-- Bridge: inline onclick handlers route to module functions via window -->
+<script>
+function sortTable(key,val,btn){ if(typeof window._sortTable==='function') window._sortTable(key,val,btn); }
+function downloadCauseList(){ if(typeof window._downloadCauseList==='function') window._downloadCauseList(); }
 </script>
 </body>
 </html>
